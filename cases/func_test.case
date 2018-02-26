@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+comments for this case file.
+-->
+<Case name="simple funtional test" category1="cat1" category2="cat2"
+    caseVersion="1" databaseVersion="000.000.000.000.000000-999.999.999.999.999999">
+
+  <Description>
+    this is an example of the simple functional test.
+  </Description>
+
+  <Prework>
+    <Session name="prework1">
+      <SqlExec>
+        <![CDATA[
+          create table t1
+              (a number, b number, c number, d number, e char(100), f date);
+        ]]>
+      </SqlExec>
+    </Session>
+  </Prework>
+  
+  <FunctionalTest>
+    <Random name="rand1" dataType="number" min="0" max="1000000" />
+    <Random name="rand2" dataType="String" min="10" max="20"
+          prefix="XX" postfix="YY" />
+    <Sequence name="seq1" min="1" max="999999999" inc="1" />
+    <Sequence name="seq2" min="1" max="999999999" inc="1" />
+    <Time name="now1" format="yyyy-MM-dd HH:mm:ss:SSS"/>
+
+    <Sync name="sync1" countDown="10" timeout="10s" />
+    <Sync name="sync2" countDown="3" timeout="10s" />
+    
+    <Session name="task1" count="10" database="tac0"
+          user="user1" password="pwd!@#$">
+          
+      <Loop repeat="1000">
+        <SqlExec bind="{thr_id}, {var1}, {seq2}, {rand1}, {rand2}, {now1}">
+          <![CDATA[
+            insert into t1 values(?, ?, ?, ?, ?, ?);
+          ]]>
+          <ExpectErrorCode code="0"/>
+        </SqlExec>
+      </Loop>
+      
+      <SqlCommit/>     
+
+      <SqlRollback>
+        <ExpectErrorCode code="0, -1001"/>
+      </SqlRollback>
+      
+      <Notify name="sync1"/>
+
+      <SqlExec out="{cnt}">
+        <![CDATA[
+          select count(*) from t1
+        ]]>
+      </SqlExec>
+
+      <Wait name="sync2" />
+      
+    </Session>
+    
+    <Session name="task2" count="10" database="oracle">
+    
+      <Wait name="sync1"/>
+      
+       <SqlSelect name="sel1" bind="">
+        <![CDATA[
+            
+        ]]>
+      </SqlSelect>
+      
+      <SqlSelect name="sel2"
+                  out="{out1}, {out2}, {out3}, {out4}, {out5}" bind="{v1}">
+        <![CDATA[
+          select a, b, c, d, e, f from t1 where a <= ?
+        ]]>
+
+        <Expects combination="or">
+          <ExpectData>
+            <Data>...</Data>
+            <Data>...</Data>
+            <Data>...</Data>
+          </ExpectData>
+          <ExpectRows match="exact">
+            <Row>
+              <Column>...</Column>
+              <Column>...</Column>
+              <Column>...</Column>
+              <Column>...</Column>
+              <Column>...</Column>
+            </Row>
+            <Row>
+              <Column>...</Column>
+              <Column>...</Column>
+              <Column>...</Column>
+              <Column>...</Column>
+              <Column>...</Column>
+            </Row>
+          </ExpectRows>
+          <ExpectErrorCode code="0"/>
+        <Expects>
+        
+      </SqlSelect>
+
+    </Session>
+    
+  </FunctionalTest>
+  
+  <Postwork>
+    <Session>
+      <SqlExec><![CDATA[ drop table t1; ]]></SqlExec>
+    </Session>
+  </Postwork>
+
+</Case>
+

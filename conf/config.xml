@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+DBtester configuration file
+-->
+
+<Config version="1">
+  <Databases>
+    <Database name="default"
+        driver="com.tmax.tibero.jdbc.TbDriver"
+        url="jdbc:tibero:thin:@192.1.1.153:52929:tb5sp1"
+        user="sys" password="tibero" version="6.0.5.1.12345"
+        reconnectOnErrors="-90401,-90403,-90405,-90406,-90407,-90409" />
+    <Database name="tac1"
+        url="jdbc:tibero:thin:@192.1.1.153:20100:tac" />
+    <Database name="tac2"
+        url="jdbc:tibero:thin:@192.1.1.153:20200:tac" />
+    <Database name="oracle" 
+              driver="com.tmax.tibero.jdbc.TbDriver"
+              url="jdbc:tibero:thin:@192.1.1.153:52929:tb5sp1"
+              user="sys" password="tibero" version="12.1.0.1">
+        <Prop name="name1" value="value1" />
+        <Prop name="name2" value="value2" />
+    </Database>
+  </Databases>
+  
+  <TestProps>
+    <TestProp category="log" name="printDebug" value="Y" />
+    <TestProp category="log" name="printTestError" value="Y" />
+    <TestProp category="report" name="detail" value="Y" />
+  </TestProps>
+
+  <UserParams>
+    <UserParam name="test.duration" value="5M" />
+    <UserParam name="session.count" value="100" />
+    
+    <UserParam name="tpcc.warehouse" value="10" />
+    <UserParam name="tpcc.terminal" value="1000" />
+  </UserParams>
+</Config>
